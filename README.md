@@ -7,6 +7,7 @@ Collected and modified Zabbix Scripts used to monitor computer systems
 - Copy the scripts into /etc/zabbix/scripts folder
 - Copy the configuration files into /etc/zabbix/zabbix_agent2.d folder
 - Import the templates from the templates folder from this repo
+- Restart the Zabbix Agent
 
 ## Speedtest Additional Components
 
