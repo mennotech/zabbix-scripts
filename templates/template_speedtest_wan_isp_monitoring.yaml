@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.2'
-  date: '2024-07-02T15:23:59Z'
+  date: '2024-07-02T15:51:11Z'
   template_groups:
     -
       uuid: a571c0d144b14fd4a87a9d9b2aa9fcd6
@@ -52,7 +52,7 @@ zabbix_export:
           triggers:
             -
               uuid: ae890421c2614808b8b2707a1a6f300a
-              expression: 'avg(/App Speedtest WAN/speedtest.ping,#3)<{$SPEEDTEST.WARNPING}'
+              expression: 'avg(/App Speedtest WAN/speedtest.ping,#3)>{$SPEEDTEST.WARNPING}'
               name: '{HOST.HOST} Slow ping speedtest'
               priority: WARNING
         -
