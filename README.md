@@ -11,7 +11,7 @@ Collected and modified Zabbix Scripts used to monitor computer systems
 
 ## Speedtest Additional Components
 
-On Debian install the following applicatoins
+On Debian install the following applications
 
 >  apt install speedtest-cli jq
 
