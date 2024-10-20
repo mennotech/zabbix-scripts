@@ -1,0 +1,472 @@
+zabbix_export:
+  version: '6.2'
+  date: '2024-10-20T03:15:07Z'
+  template_groups:
+    -
+      uuid: 1d12408342854fd5a4436dd6d5d1bd4a
+      name: Templates/Telephony
+  templates:
+    -
+      uuid: 85643395f4564ffd87334f1ad38757ba
+      template: 'Asterisk Prometheus Metrics by Mennotech.tel'
+      name: 'Asterisk Prometheus Metrics by Mennotech.tel'
+      description: |
+        Gathers metrics using the Asterisk miniHTTP server and res_prometheus module.
+        
+        See /etc/asterisk/prometheus.conf
+      groups:
+        -
+          name: Templates/Telephony
+      items:
+        -
+          uuid: 1b2d53edbb104e638757a4689eef010c
+          name: 'Asterisk Current Bridge Count'
+          type: DEPENDENT
+          key: asterisk_bridges_count
+          delay: '0'
+          description: |
+            # HELP asterisk_bridges_count Current bridge count.
+            # TYPE asterisk_bridges_count gauge
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_bridges_count{eid=~".*"}'
+                - value
+                - ''
+          master_item:
+            key: asterisk_prometheus
+        -
+          uuid: 9b4c1e64eaa94e389f3e405bcec443df
+          name: 'Asterisk Build Date'
+          type: DEPENDENT
+          key: asterisk_build_date
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: TEXT
+          description: |
+            # HELP asterisk_core_properties Asterisk instance properties. The value of this will always be 1.
+            # TYPE asterisk_core_properties counter
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_core_properties{eid=~".*"}'
+                - label
+                - build_date
+          master_item:
+            key: asterisk_prometheus
+        -
+          uuid: e6d648ee2d7b4ba584da7e87ee8260f0
+          name: 'Asterisk Build Options'
+          type: DEPENDENT
+          key: asterisk_build_options
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: TEXT
+          description: |
+            # HELP asterisk_core_properties Asterisk instance properties. The value of this will always be 1.
+            # TYPE asterisk_core_properties counter
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_core_properties{eid=~".*"}'
+                - label
+                - build_options
+          master_item:
+            key: asterisk_prometheus
+        -
+          uuid: 51cb9b5e72b54ecf97fa69edb847a3a7
+          name: 'Asterisk Current Calls'
+          type: DEPENDENT
+          key: asterisk_calls_count
+          delay: '0'
+          description: |
+            # HELP asterisk_calls_count Current call count.
+            # TYPE asterisk_calls_count gauge
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_calls_count{eid=~".*"}'
+                - value
+                - ''
+          master_item:
+            key: asterisk_prometheus
+        -
+          uuid: e8332f977adc4651bf07c8a5e73c90cd
+          name: 'Asterisk Total Calls Count'
+          type: DEPENDENT
+          key: asterisk_calls_sum
+          delay: '0'
+          description: |
+            # HELP asterisk_calls_sum Total call count.
+            # TYPE asterisk_calls_sum counter
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_calls_sum{eid=~".*"}'
+                - value
+                - ''
+          master_item:
+            key: asterisk_prometheus
+        -
+          uuid: 9107f1f6409e4d5882b71f13cce7f0f4
+          name: 'Asterisk Channels Count'
+          type: DEPENDENT
+          key: asterisk_channels_count
+          delay: '0'
+          description: |
+            # HELP asterisk_channels_count Current channel count.
+            # TYPE asterisk_channels_count gauge
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_channels_count{eid=~".*"}'
+                - value
+                - ''
+          master_item:
+            key: asterisk_prometheus
+        -
+          uuid: c98474f8659940089d63daabd22f4d2b
+          name: 'Asterisk Last Reload Time'
+          type: DEPENDENT
+          key: asterisk_core_last_reload_seconds
+          delay: '0'
+          description: |
+            # HELP asterisk_core_last_reload_seconds Time since last Asterisk reload in seconds.
+            # TYPE asterisk_core_last_reload_seconds counter
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_core_last_reload_seconds{eid=~".*"}'
+                - value
+                - ''
+          master_item:
+            key: asterisk_prometheus
+        -
+          uuid: 3dd287e1faf44ddeabed7325bf966cbd
+          name: 'Asterisk Scrape Time'
+          type: DEPENDENT
+          key: asterisk_core_scrape_time_ms
+          delay: '0'
+          description: |
+            # HELP asterisk_core_scrape_time_ms Total time taken to collect metrics, in milliseconds
+            # TYPE asterisk_core_scrape_time_ms counter
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_core_scrape_time_ms{eid=~".*"}'
+                - value
+                - ''
+          master_item:
+            key: asterisk_prometheus
+        -
+          uuid: 2d40545edda24001b836931eff2e1ebc
+          name: 'Asterisk Uptime'
+          type: DEPENDENT
+          key: asterisk_core_uptime_seconds
+          delay: '0'
+          description: |
+            # HELP asterisk_core_uptime_seconds Asterisk instance uptime in seconds.
+            # TYPE asterisk_core_uptime_seconds counter
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_core_uptime_seconds{eid=~".*"}'
+                - value
+                - ''
+          master_item:
+            key: asterisk_prometheus
+          triggers:
+            -
+              uuid: 6f2af4fb047845e78e6845f51488412e
+              expression: 'last(/Asterisk Prometheus Metrics by Mennotech.tel/asterisk_core_uptime_seconds)<600'
+              name: 'has been restart'
+              event_name: '{HOST.NAME} Asterisk has been restarted (uptime < 10m)'
+              priority: WARNING
+        -
+          uuid: 10e3e823e11443c68462e665e377a882
+          name: 'Asterisk EID'
+          type: DEPENDENT
+          key: asterisk_eid
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: TEXT
+          description: |
+            # HELP asterisk_core_properties Asterisk instance properties. The value of this will always be 1.
+            # TYPE asterisk_core_properties counter
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_core_properties{eid=~".*"}'
+                - label
+                - eid
+          master_item:
+            key: asterisk_prometheus
+        -
+          uuid: ae80e4bcd75042e09b6f22311d63125f
+          name: 'Asterisk Current Endpoint Count'
+          type: DEPENDENT
+          key: asterisk_endpoints_count
+          delay: '0'
+          description: |
+            # HELP asterisk_endpoints_count Current endpoint count.
+            # TYPE asterisk_endpoints_count gauge
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_endpoints_count{eid=~".*"}'
+                - value
+                - ''
+          master_item:
+            key: asterisk_prometheus
+        -
+          uuid: e9f62c85368542e5b7aaefa9da8c6285
+          name: 'Asterisk HTTP Poller'
+          type: HTTP_AGENT
+          key: asterisk_prometheus
+          delay: 30s
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$ASTERISK.PROM.USER}'
+          password: '{$ASTERISK.PROM.PASS}'
+          url: 'https://{HOST.NAME}:{$ASTERISK.PROM.PORT}/{$ASTERISK.PROM.PATH}'
+        -
+          uuid: a9a7e767e80a49959512478fe79e6b57
+          name: 'Asterisk Version'
+          type: DEPENDENT
+          key: asterisk_version
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          description: |
+            # HELP asterisk_core_properties Asterisk instance properties. The value of this will always be 1.
+            # TYPE asterisk_core_properties counter
+          preprocessing:
+            -
+              type: PROMETHEUS_PATTERN
+              parameters:
+                - 'asterisk_core_properties{eid=~".*"}'
+                - label
+                - version
+          master_item:
+            key: asterisk_prometheus
+      discovery_rules:
+        -
+          uuid: b13270b626824abc92fc0129dcee9f56
+          name: 'Asterisk Endpoint Channels Count'
+          type: DEPENDENT
+          key: asterisk_endpoints_channels_count
+          delay: '0'
+          lifetime: 14d
+          description: |
+            # HELP asterisk_endpoints_channels_count Count of the number of channels currently existing that are associated with the endpoint.
+            # TYPE asterisk_endpoints_channels_count gauge
+          item_prototypes:
+            -
+              uuid: 79fe12e202164515b4804c98ca4bc36a
+              name: 'Asterisk Endpoint Channels on {#ID}'
+              type: DEPENDENT
+              key: 'asterisk_endpoints_channels_count[{#ID}]'
+              delay: '0'
+              units: channels
+              preprocessing:
+                -
+                  type: PROMETHEUS_PATTERN
+                  parameters:
+                    - '{#METRIC}{id="{#ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: asterisk_prometheus
+          master_item:
+            key: asterisk_prometheus
+          lld_macro_paths:
+            -
+              lld_macro: '{#HELP}'
+              path: '$[''help'']'
+            -
+              lld_macro: '{#ID}'
+              path: '$.labels[''id'']'
+            -
+              lld_macro: '{#METRIC}'
+              path: '$[''name'']'
+            -
+              lld_macro: '{#RESOURCE}'
+              path: '$.labels[''resource'']'
+            -
+              lld_macro: '{#TECH}'
+              path: '$.labels[''tech'']'
+          preprocessing:
+            -
+              type: PROMETHEUS_TO_JSON
+              parameters:
+                - 'asterisk_endpoints_channels_count{eid=~".*"}'
+        -
+          uuid: afdf2caddd4f481daa5ece9a16b50f05
+          name: 'Asterisk Endpoint State Discovery'
+          type: DEPENDENT
+          key: asterisk_endpoints_state
+          delay: '0'
+          lifetime: 14d
+          description: |
+            # HELP asterisk_endpoints_state Individual endpoint states. 0=unknown; 1=offline; 2=online.
+            # TYPE asterisk_endpoints_state gauge
+          item_prototypes:
+            -
+              uuid: 7934aac6970545a69984af7727f93d82
+              name: 'Asterisk Endpoint State on {#ID}'
+              type: DEPENDENT
+              key: 'asterisk_endpoints_state[{#ID}]'
+              delay: '0'
+              description: |
+                # HELP asterisk_endpoints_state Individual endpoint states. 0=unknown; 1=offline; 2=online.
+                # TYPE asterisk_endpoints_state gauge
+              valuemap:
+                name: 'Endpoint States'
+              preprocessing:
+                -
+                  type: PROMETHEUS_PATTERN
+                  parameters:
+                    - '{#METRIC}{id="{#ID}"}'
+                    - value
+                    - ''
+              master_item:
+                key: asterisk_prometheus
+          master_item:
+            key: asterisk_prometheus
+          lld_macro_paths:
+            -
+              lld_macro: '{#HELP}'
+              path: '$[''help'']'
+            -
+              lld_macro: '{#ID}'
+              path: '$.labels[''id'']'
+            -
+              lld_macro: '{#METRIC}'
+              path: '$[''name'']'
+            -
+              lld_macro: '{#RESOURCE}'
+              path: '$.labels[''resource'']'
+            -
+              lld_macro: '{#TECH}'
+              path: '$.labels[''tech'']'
+          preprocessing:
+            -
+              type: PROMETHEUS_TO_JSON
+              parameters:
+                - 'asterisk_endpoints_state{eid=~".*"}'
+        -
+          uuid: 6228ffa2d7d643dbb52be4f2ae597609
+          name: 'Asterisk PJSIP Registration Status'
+          type: DEPENDENT
+          key: asterisk_pjsip_outbound_registration_status
+          delay: '0'
+          lifetime: 14d
+          description: |
+            # HELP asterisk_pjsip_outbound_registration_status Current registration status. 0=Unregistered; 1=Registered; 2=Rejected.
+            # TYPE asterisk_pjsip_outbound_registration_status gauge
+          item_prototypes:
+            -
+              uuid: 3726ec510bcb4a62aad02d29c8ac09db
+              name: 'Asterisk Channels Status on {#CHANNELTYPE} {#DOMAIN}'
+              type: DEPENDENT
+              key: 'asterisk_pjsip_outbound_registration_status[{#DOMAIN}]'
+              delay: '0'
+              valuemap:
+                name: 'PJSIP Outbound Registration Status'
+              preprocessing:
+                -
+                  type: PROMETHEUS_PATTERN
+                  parameters:
+                    - '{#METRIC}{domain="{#DOMAIN}"}'
+                    - value
+                    - ''
+              master_item:
+                key: asterisk_prometheus
+              trigger_prototypes:
+                -
+                  uuid: c482058b71f6489fb9f40e90e3528c87
+                  expression: 'last(/Asterisk Prometheus Metrics by Mennotech.tel/asterisk_pjsip_outbound_registration_status[{#DOMAIN}],#3)<>1'
+                  name: 'Outbound PJSIP Not Registered {#DOMAIN}'
+                  priority: WARNING
+          master_item:
+            key: asterisk_prometheus
+          lld_macro_paths:
+            -
+              lld_macro: '{#CHANNELTYPE}'
+              path: '$.labels[''channel_type'']'
+            -
+              lld_macro: '{#DOMAIN}'
+              path: '$.labels[''domain'']'
+            -
+              lld_macro: '{#HELP}'
+              path: '$[''help'']'
+            -
+              lld_macro: '{#METRIC}'
+              path: '$[''name'']'
+            -
+              lld_macro: '{#USERNAME}'
+              path: '$.labels[''username'']'
+          preprocessing:
+            -
+              type: PROMETHEUS_TO_JSON
+              parameters:
+                - 'asterisk_pjsip_outbound_registration_status{eid=~".*"}'
+      macros:
+        -
+          macro: '{$ASTERISK.PROM.PASS}'
+          value: password
+          description: 'Prometheus asterisk module password set in /etc/asterisk/prometheus.conf'
+        -
+          macro: '{$ASTERISK.PROM.PATH}'
+          value: metrics
+          description: 'The URL path to the metrics page (default metrics)'
+        -
+          macro: '{$ASTERISK.PROM.PORT}'
+          value: '8089'
+          description: 'The Asterisk Mini Server TLS Port (default 8089)'
+        -
+          macro: '{$ASTERISK.PROM.USER}'
+          value: zabbix
+          description: 'Prometheus asterisk module user set in /etc/asterisk/prometheus.conf'
+      valuemaps:
+        -
+          uuid: fc11fb77072b41c6b0fd831c675d2968
+          name: 'Endpoint States'
+          mappings:
+            -
+              value: '0'
+              newvalue: unknwon
+            -
+              value: '1'
+              newvalue: offline
+            -
+              value: '2'
+              newvalue: online
+        -
+          uuid: a11450982ce540ddb344ff02d9da4591
+          name: 'PJSIP Outbound Registration Status'
+          mappings:
+            -
+              value: '0'
+              newvalue: unregistered
+            -
+              value: '1'
+              newvalue: registered
+            -
+              value: '2'
+              newvalue: rejected
