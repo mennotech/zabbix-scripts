@@ -1,0 +1,95 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: a571c0d144b14fd4a87a9d9b2aa9fcd6
+      name: Templates/Applications
+  templates:
+    - uuid: 78213e125e1a4cba987ed600ca7dbba9
+      template: 'SIP Tests with sipexer by Mennotech.tel'
+      name: 'SIP Tests with sipexer by Mennotech.tel'
+      groups:
+        - name: Templates/Applications
+      items:
+        - uuid: bfa7c7fb303741e89f86ee803742a7df
+          name: 'SIP First Result Code'
+          type: DEPENDENT
+          key: sip.resultcode1
+          delay: '0'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - '.*SIP\/2\.0 ([0-9]+)'
+                - \1
+          master_item:
+            key: 'sipexer["-fu",{$SIP_USER},"-au",{$SIP_USER},"-ap",{$SIP_PASSWORD},"-vl","0","{$SIP_TRANSPORT}:{HOST.NAME}:{$SIP_PORT}"]'
+          triggers:
+            - uuid: 58f90ee37a0a4d5b9b641656f79b0598
+              expression: 'last(/SIP Tests with sipexer by Mennotech.tel/sip.resultcode1)<>{$SIP_FIRSTCODE}'
+              name: 'Unexpected SIP first return code'
+              priority: HIGH
+        - uuid: 0b43f1a4bf2642df9324dce6707c28d5
+          name: 'SIP Last Result Code'
+          type: DEPENDENT
+          key: sip.resultcode2
+          delay: '0'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - '[\S\s]+SIP\/2\.0 ([0-9]+)'
+                - \1
+          master_item:
+            key: 'sipexer["-fu",{$SIP_USER},"-au",{$SIP_USER},"-ap",{$SIP_PASSWORD},"-vl","0","{$SIP_TRANSPORT}:{HOST.NAME}:{$SIP_PORT}"]'
+          triggers:
+            - uuid: d1682023e1b745fe8d3d403daa1726af
+              expression: 'last(/SIP Tests with sipexer by Mennotech.tel/sip.resultcode2)<>{$SIP_LASTCODE}'
+              name: 'Unexpected SIP last return code'
+              priority: HIGH
+        - uuid: 359a08c285764e6c997943262745e543
+          name: 'SIP Server'
+          type: DEPENDENT
+          key: sip.server
+          delay: '0'
+          history: 7d
+          value_type: CHAR
+          trends: '0'
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - 'Server\: (.*)'
+                - \1
+          master_item:
+            key: 'sipexer["-fu",{$SIP_USER},"-au",{$SIP_USER},"-ap",{$SIP_PASSWORD},"-vl","0","{$SIP_TRANSPORT}:{HOST.NAME}:{$SIP_PORT}"]'
+          triggers:
+            - uuid: 80848a591e9847eda531321aa5bf6319
+              expression: 'change(/SIP Tests with sipexer by Mennotech.tel/sip.server)=1'
+              recovery_mode: NONE
+              name: 'SIP Server changed'
+              priority: INFO
+              manual_close: 'YES'
+        - uuid: 981400a08e504421a9107d3bb36c5780
+          name: 'SIP Authentication Test'
+          type: EXTERNAL
+          key: 'sipexer["-fu",{$SIP_USER},"-au",{$SIP_USER},"-ap",{$SIP_PASSWORD},"-vl","0","{$SIP_TRANSPORT}:{HOST.NAME}:{$SIP_PORT}"]'
+          delay: 30s
+          history: 1h
+          value_type: TEXT
+          trends: '0'
+      macros:
+        - macro: '{$SIP_FIRSTCODE}'
+          value: '401'
+          description: 'Expected first return code'
+        - macro: '{$SIP_LASTCODE}'
+          value: '200'
+          description: 'Expected last return code'
+        - macro: '{$SIP_PASSWORD}'
+          value: pleasechangeme
+          description: 'SIP test password, make sure this user cannot make calls, just authenticate'
+        - macro: '{$SIP_PORT}'
+          value: '5061'
+          description: 'SIP Port to test'
+        - macro: '{$SIP_TRANSPORT}'
+          value: tls
+          description: 'udp, tcp or tls'
+        - macro: '{$SIP_USER}'
+          value: '999'
+          description: 'SIP test username'
